@@ -21,7 +21,7 @@
 (package-initialize)
 
 ;; auto-install missing packages
-(defvar my-packages '(company pyvenv yasnippet web-mode go-mode))
+(defvar my-packages '(company pyvenv yasnippet web-mode go-mode typescript-mode))
 
 (defun my-install-packages ()
   (package-refresh-contents)
@@ -74,6 +74,25 @@
   (define-key go-mode-map (kbd "C-c C-a") 'eglot-code-actions)
   (define-key go-mode-map (kbd "C-c f") 'eglot-format-buffer)
   (add-hook 'before-save-hook 'eglot-format-buffer nil t)))
+
+
+;; eglot + typescript-language-server
+(add-hook 'typescript-mode-hook 'eglot-ensure)
+(add-hook 'typescript-mode-hook (lambda ()
+  (define-key typescript-mode-map (kbd "C-c g") 'xref-find-definitions)
+  (define-key typescript-mode-map (kbd "C-c d") 'eldoc-doc-buffer)
+  (define-key typescript-mode-map (kbd "C-c TAB") 'completion-at-point)
+  (define-key typescript-mode-map (kbd "C-c r") 'eglot-rename)
+  (define-key typescript-mode-map (kbd "C-c C-a") 'eglot-code-actions)
+  (define-key typescript-mode-map (kbd "C-c f") 'eglot-format-buffer)
+  (add-hook 'before-save-hook 'eglot-format-buffer nil t)))
+
+;; TSX через web-mode
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
+(add-to-list 'eglot-server-programs '(web-mode . ("typescript-language-server" "--stdio")))
+(add-hook 'web-mode-hook (lambda ()
+  (when (and buffer-file-name (string-match-p "\\.tsx\\'" buffer-file-name))
+    (eglot-ensure))))
 
 
 ;; pyvenv
