@@ -1,0 +1,7 @@
+elpa/
+eln-cache/
+auto-save-list/
+ido.last
+*~
+\#*\#
+*.elc
