@@ -135,6 +135,7 @@
              (not (null treemacs-python-executable)))
   (`(t . t) (treemacs-git-mode 'deferred))
   (`(t . _) (treemacs-git-mode 'simple)))
+(treemacs-start-on-boot)
 
 ;; xclip (clipboard in terminal)
 (require 'xclip)
