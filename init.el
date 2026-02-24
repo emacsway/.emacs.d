@@ -21,7 +21,7 @@
 (package-initialize)
 
 ;; auto-install missing packages
-(defvar my-packages '(company pyvenv yasnippet web-mode go-mode typescript-mode treemacs))
+(defvar my-packages '(company pyvenv yasnippet web-mode go-mode typescript-mode treemacs xclip))
 
 (defun my-install-packages ()
   (package-refresh-contents)
@@ -135,6 +135,10 @@
              (not (null treemacs-python-executable)))
   (`(t . t) (treemacs-git-mode 'deferred))
   (`(t . _) (treemacs-git-mode 'simple)))
+
+;; xclip (clipboard in terminal)
+(require 'xclip)
+(xclip-mode 1)
 
 ;; ido
 (require 'ido)
