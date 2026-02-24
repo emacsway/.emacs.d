@@ -122,7 +122,19 @@
 ;; treemacs (file tree sidebar)
 (require 'treemacs)
 (global-set-key (kbd "C-c t t") 'treemacs)
-(setq treemacs-width 30)
+(setq treemacs-width 30
+      treemacs-position 'left
+      treemacs-no-delete-other-windows t
+      treemacs-collapse-dirs (if treemacs-python-executable 3 0)
+      treemacs-sorting 'alphabetic-asc
+      treemacs-litter-directories '("/node_modules" "/.venv" "/.env" "/.cask"))
+(treemacs-follow-mode t)
+(treemacs-filewatch-mode t)
+(treemacs-fringe-indicator-mode 'always)
+(pcase (cons (not (null (executable-find "git")))
+             (not (null treemacs-python-executable)))
+  (`(t . t) (treemacs-git-mode 'deferred))
+  (`(t . _) (treemacs-git-mode 'simple)))
 
 ;; ido
 (require 'ido)
