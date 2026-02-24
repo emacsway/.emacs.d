@@ -8,6 +8,7 @@
   "Installation directory of my-emacs"
 )
 
+(global-auto-revert-mode t)
 (setq auto-save-default nil)
 (setq case-fold-search nil)
 (setq column-number-mode t)
