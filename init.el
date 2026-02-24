@@ -21,7 +21,7 @@
 (package-initialize)
 
 ;; auto-install missing packages
-(defvar my-packages '(company pyvenv yasnippet web-mode go-mode typescript-mode))
+(defvar my-packages '(company pyvenv yasnippet web-mode go-mode typescript-mode treemacs))
 
 (defun my-install-packages ()
   (package-refresh-contents)
@@ -118,6 +118,11 @@
   (setq web-mode-script-padding 0)
   (setq web-mode-block-padding 0)))
 
+
+;; treemacs (file tree sidebar)
+(require 'treemacs)
+(global-set-key (kbd "C-c t t") 'treemacs)
+(setq treemacs-width 30)
 
 ;; ido
 (require 'ido)

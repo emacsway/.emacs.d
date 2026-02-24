@@ -117,5 +117,5 @@ symbol, not word, as I need this for programming the most."
            (position (cdr (assoc selected-symbol name-and-pos))))
       (goto-char position))))
 
-(global-set-key (kbd "C-c t") 'ido-goto-symbol)
+(global-set-key (kbd "C-c m t") 'ido-goto-symbol)
 
