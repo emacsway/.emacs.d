@@ -76,6 +76,7 @@ symbol, not word, as I need this for programming the most."
    (other-window -1))
 
 (define-key global-map (kbd "C-x O") 'prev-window) ;; C-x p is now project.el prefix in Emacs 28+
+(windmove-default-keybindings) ;; S-<arrow> to move between windows
 
 ;; Ido mode with fuzzy matching
 (require 'ido)
