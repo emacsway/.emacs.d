@@ -121,3 +121,14 @@ symbol, not word, as I need this for programming the most."
 
 (global-set-key (kbd "C-c m t") 'ido-goto-symbol)
 
+;; copy file path to clipboard
+(defun copy-file-path ()
+  "Copy the current buffer's file path to the kill ring."
+  (interactive)
+  (if buffer-file-name
+      (progn (kill-new buffer-file-name)
+             (message "%s" buffer-file-name))
+    (message "Buffer has no file")))
+
+(global-set-key (kbd "C-c m p") 'copy-file-path)
+
