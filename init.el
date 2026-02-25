@@ -136,6 +136,10 @@
   (`(t . t) (treemacs-git-mode 'deferred))
   (`(t . _) (treemacs-git-mode 'simple)))
 (treemacs-start-on-boot)
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (when (treemacs-get-local-window)
+              (select-window (treemacs-get-local-window)))))
 
 ;; xclip (clipboard in terminal)
 (require 'xclip)
