@@ -21,7 +21,7 @@
 (package-initialize)
 
 ;; auto-install missing packages
-(defvar my-packages '(company pyvenv yasnippet web-mode go-mode typescript-mode treemacs xclip))
+(defvar my-packages '(company pyvenv yasnippet web-mode go-mode typescript-mode treemacs xclip eat))
 
 (defun my-install-packages ()
   (package-refresh-contents)
@@ -149,6 +149,19 @@
 (require 'ido)
 (ido-mode t)
 (setq ido-enable-flex-matching t)
+
+
+;; claude-code.el (Claude Code CLI in Emacs)
+(unless (package-installed-p 'claude-code)
+  (package-vc-install "https://github.com/stevemolitor/claude-code.el"))
+(require 'claude-code)
+(global-set-key (kbd "C-c a c") 'claude-code-transient)
+
+;; claudemacs (Claude Code pair programming)
+(unless (package-installed-p 'claudemacs)
+  (package-vc-install "https://github.com/cpoile/claudemacs"))
+(require 'claudemacs)
+(global-set-key (kbd "C-c a m") 'claudemacs-transient)
 
 
 ;; settings
