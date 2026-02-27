@@ -135,11 +135,21 @@
              (not (null treemacs-python-executable)))
   (`(t . t) (treemacs-git-mode 'deferred))
   (`(t . _) (treemacs-git-mode 'simple)))
-(treemacs-start-on-boot)
 (add-hook 'emacs-startup-hook
           (lambda ()
-            (when (treemacs-get-local-window)
-              (select-window (treemacs-get-local-window)))))
+            (let* ((dir (expand-file-name default-directory))
+                   (name (file-name-nondirectory (directory-file-name dir))))
+              ;; Clear persisted state so treemacs always shows current directory
+              (let ((persist-file (expand-file-name ".cache/treemacs-persist" user-emacs-directory)))
+                (when (file-exists-p persist-file)
+                  (delete-file persist-file)))
+              (treemacs)
+              ;; Remove all existing projects and add current directory
+              (dolist (project (treemacs-workspace->projects (treemacs-current-workspace)))
+                (treemacs-do-remove-project-from-workspace project t))
+              (treemacs-do-add-project-to-workspace dir name)
+              (when (treemacs-get-local-window)
+                (select-window (treemacs-get-local-window))))))
 
 ;; xclip (clipboard in terminal)
 (require 'xclip)
