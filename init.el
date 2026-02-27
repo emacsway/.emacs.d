@@ -157,7 +157,7 @@
 
 ;; ido
 (require 'ido)
-(ido-mode t)
+(ido-mode 'buffers)
 (setq ido-enable-flex-matching t)
 
 
