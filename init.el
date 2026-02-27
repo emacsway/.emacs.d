@@ -155,10 +155,11 @@
 (require 'xclip)
 (xclip-mode 1)
 
-;; ido
+;; ido (buffers only) + fido (files)
 (require 'ido)
 (ido-mode 'buffers)
 (setq ido-enable-flex-matching t)
+(fido-mode t)
 
 
 ;; claude-code.el (Claude Code CLI in Emacs)
