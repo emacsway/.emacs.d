@@ -43,6 +43,7 @@
 
 ;; eglot + pyright (built-in in Emacs 30)
 (require 'eglot)
+(setq eglot-autoshutdown t)
 (add-to-list 'eglot-server-programs '(python-mode . ("pyright-langserver" "--stdio")))
 (add-hook 'python-mode-hook 'eglot-ensure)
 (add-hook 'python-mode-hook (lambda ()
@@ -138,16 +139,12 @@
 (add-hook 'emacs-startup-hook
           (lambda ()
             (let* ((dir (expand-file-name default-directory))
-                   (name (file-name-nondirectory (directory-file-name dir))))
-              ;; Clear persisted state so treemacs always shows current directory
-              (let ((persist-file (expand-file-name ".cache/treemacs-persist" user-emacs-directory)))
-                (when (file-exists-p persist-file)
-                  (delete-file persist-file)))
+                   (name (file-name-nondirectory (directory-file-name dir)))
+                   (persist-file (expand-file-name ".cache/treemacs-persist" user-emacs-directory)))
+              ;; Write persist file with current directory before treemacs starts
+              (with-temp-file persist-file
+                (insert (format "* Default\n** %s\n - path :: %s\n" name dir)))
               (treemacs)
-              ;; Remove all existing projects and add current directory
-              (dolist (project (treemacs-workspace->projects (treemacs-current-workspace)))
-                (treemacs-do-remove-project-from-workspace project t))
-              (treemacs-do-add-project-to-workspace dir name)
               (when (treemacs-get-local-window)
                 (select-window (treemacs-get-local-window))))))
 
