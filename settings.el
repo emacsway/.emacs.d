@@ -25,7 +25,7 @@
 (setq sgml-basic-offset 4)
 (setq global-subword-mode t)
 (setq tags-case-fold-search nil)
-(setq xterm-mouse-mode t)
+(xterm-mouse-mode 1)
 ;; (setq ido-mode t)
 
 ;; (xterm-mouse-mode)
