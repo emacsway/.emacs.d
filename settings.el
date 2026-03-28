@@ -15,6 +15,7 @@
 (setq delete-auto-save-files nil)
 (setq global-hl-line-mode t)
 (global-display-line-numbers-mode t)
+(global-tab-line-mode 1)
 (setq indent-tabs-mode nil)
 (setq make-backup-files nil)
 (mouse-wheel-mode t)
