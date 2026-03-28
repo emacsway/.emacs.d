@@ -44,6 +44,8 @@
 ;; eglot + pyright (built-in in Emacs 30)
 (require 'eglot)
 (setq eglot-autoshutdown t)
+(setq-default eglot-workspace-configuration
+              '(:python.analysis (:autoImportCompletions t)))
 (add-to-list 'eglot-server-programs '(python-mode . ("pyright-langserver" "--stdio")))
 (add-hook 'python-mode-hook 'eglot-ensure)
 (add-hook 'python-mode-hook (lambda ()
