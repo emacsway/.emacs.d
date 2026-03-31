@@ -21,7 +21,7 @@
 (package-initialize)
 
 ;; auto-install missing packages
-(defvar my-packages '(company pyvenv yasnippet web-mode go-mode typescript-mode treemacs xclip eat))
+(defvar my-packages '(company pyvenv yasnippet web-mode go-mode typescript-mode treemacs xclip eat chess lichess))
 
 (defun my-install-packages ()
   (package-refresh-contents)
