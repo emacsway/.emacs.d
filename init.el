@@ -21,7 +21,7 @@
 (package-initialize)
 
 ;; auto-install missing packages
-(defvar my-packages '(company pyvenv yasnippet web-mode go-mode typescript-mode treemacs xclip eat chess lichess))
+(defvar my-packages '(company pyvenv yasnippet web-mode go-mode typescript-mode tuareg dune treemacs xclip eat chess lichess))
 
 (defun my-install-packages ()
   (package-refresh-contents)
@@ -89,6 +89,18 @@
   (define-key typescript-mode-map (kbd "C-c C-a") 'eglot-code-actions)
   (define-key typescript-mode-map (kbd "C-c f") 'eglot-format-buffer)
   (add-hook 'before-save-hook 'eglot-format-buffer nil t)))
+
+;; eglot + ocaml-lsp-server
+(add-hook 'tuareg-mode-hook 'eglot-ensure)
+(add-hook 'tuareg-mode-hook (lambda ()
+  (define-key tuareg-mode-map (kbd "C-c g") 'xref-find-definitions)
+  (define-key tuareg-mode-map (kbd "C-c d") 'eldoc-doc-buffer)
+  (define-key tuareg-mode-map (kbd "C-c TAB") 'completion-at-point)
+  (define-key tuareg-mode-map (kbd "C-c r") 'eglot-rename)
+  (define-key tuareg-mode-map (kbd "C-c C-a") 'eglot-code-actions)
+  (define-key tuareg-mode-map (kbd "C-c f") 'eglot-format-buffer)
+  (add-hook 'before-save-hook 'eglot-format-buffer nil t)))
+
 
 ;; TSX через web-mode
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
