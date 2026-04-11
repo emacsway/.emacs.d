@@ -39,6 +39,9 @@
 (setq scroll-step 1)
 ;; (setq ac-ignore-case nil) ;; auto-complete removed
 (setq require-final-newline t)
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+(add-hook 'markdown-mode-hook
+          (lambda () (remove-hook 'before-save-hook 'delete-trailing-whitespace t)))
 (setq grep-find-command '("find . -name \"*.py\" -type f -print0 | xargs -0 -e grep -nH -e \"\"" . 93))
 (setq grep-find-ignored-directories '("SCCS" "RCS" "CVS" "MCVS" ".svn" ".git" ".hg" ".bzr" "_MTN" "_darcs" "{arch}"))
 (global-set-key (kbd "C-c m f") 'rgrep)
