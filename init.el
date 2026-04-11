@@ -60,7 +60,12 @@
 ;; ruff format on save
 (setq python-check-command "ruff check")
 (add-hook 'python-mode-hook (lambda ()
-  (add-hook 'before-save-hook 'eglot-format-buffer nil t)))
+  ;; Order matters: add eglot-format-buffer first, then delete-trailing-whitespace,
+  ;; so that delete-trailing-whitespace ends up at the front of the local hook list
+  ;; and runs *before* eglot-format-buffer. This way trailing whitespace is still
+  ;; cleaned up even if pyright signals "no formatting capability".
+  (add-hook 'before-save-hook 'eglot-format-buffer nil t)
+  (add-hook 'before-save-hook 'delete-trailing-whitespace nil t)))
 
 ;; ipython
 (when (executable-find "ipython")
