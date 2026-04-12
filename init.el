@@ -15,13 +15,20 @@
     (add-to-list 'exec-path go-bin)))
 
 
+;; ~/.local/bin (pipx installs binaries here, e.g. ruff)
+(let ((local-bin (expand-file-name "~/.local/bin")))
+  (when (file-directory-p local-bin)
+    (setenv "PATH" (concat local-bin ":" (getenv "PATH")))
+    (add-to-list 'exec-path local-bin)))
+
+
 ;; package
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
 ;; auto-install missing packages
-(defvar my-packages '(company pyvenv yasnippet web-mode go-mode typescript-mode tuareg dune treemacs xclip eat chess lichess))
+(defvar my-packages '(company pyvenv yasnippet web-mode go-mode typescript-mode tuareg dune treemacs xclip eat chess lichess flymake-ruff apheleia))
 
 (defun my-install-packages ()
   (package-refresh-contents)
@@ -54,18 +61,73 @@
   (define-key python-mode-map (kbd "C-c TAB") 'completion-at-point)
   (define-key python-mode-map (kbd "C-c r") 'eglot-rename)
   (define-key python-mode-map (kbd "C-c C-a") 'eglot-code-actions)
-  (define-key python-mode-map (kbd "C-c f") 'eglot-format-buffer)
+  ;; (define-key python-mode-map (kbd "C-c f") 'eglot-format-buffer)  ; pyright has no formatting capability
+  (define-key python-mode-map (kbd "C-c f") 'apheleia-format-buffer)
 ))
 
-;; ruff format on save
 (setq python-check-command "ruff check")
+
+;; Python: ruff lint + format without a second LSP
+;; ---------------------------------------------------------------------------
+;; Eglot is architecturally one-server-per-buffer by design of its maintainer
+;; (see https://github.com/joaotavora/eglot/discussions/1429), so we cannot
+;; run `ruff server` alongside pyright the way the VSCode extension
+;; charliermarsh.ruff does. Instead we split ruff's capabilities across two
+;; non-LSP channels that coexist cleanly with pyright-via-eglot:
+;;
+;;   - linting:    flymake-ruff  — a flymake backend running `ruff check`.
+;;                                 It coexists with eglot's own flymake
+;;                                 backend; pyright contributes type errors,
+;;                                 ruff contributes lint warnings.
+;;   - formatting: apheleia      — async before-save runner of `ruff format`,
+;;                                 applying changes via RCS-patch so point
+;;                                 and undo history survive.
+;;
+;; Pyright has no formatting capability, so `eglot-format-buffer' is NOT
+;; attached to before-save-hook for python-mode — it would error on every
+;; save. The global `delete-trailing-whitespace' from settings.el handles the
+;; whitespace side as a safety net; the local hook below keeps that working
+;; even if apheleia's save chain aborts for any reason.
+;;
+;; Future option: when Rassumfrassum
+;; (https://github.com/joaotavora/rassumfrassum), the LSP multiplexer written
+;; by the eglot maintainer himself, stabilizes, we can collapse both channels
+;; back into a single multiplexed LSP setup that gives ruff code actions and
+;; hover on top of what we have now:
+;;
+;;   (add-to-list 'eglot-server-programs
+;;                '((python-mode python-ts-mode)
+;;                  . ("rass" "--"
+;;                     "pyright-langserver" "--stdio" "--"
+;;                     "ruff" "server")))
+;;   ;; then: drop flymake-ruff and apheleia from python-mode,
+;;   ;; re-add eglot-format-buffer to before-save-hook.
+;;
+;; As of 2026-04 Rassumfrassum is labeled "young project, will have bugs",
+;; so we stay with the mature apheleia + flymake-ruff pair for now.
+
+;; belt-and-braces: trailing whitespace cleanup as a local hook, independent
+;; of apheleia's save chain and of the global hook in settings.el.
 (add-hook 'python-mode-hook (lambda ()
-  ;; Order matters: add eglot-format-buffer first, then delete-trailing-whitespace,
-  ;; so that delete-trailing-whitespace ends up at the front of the local hook list
-  ;; and runs *before* eglot-format-buffer. This way trailing whitespace is still
-  ;; cleaned up even if pyright signals "no formatting capability".
-  (add-hook 'before-save-hook 'eglot-format-buffer nil t)
+  ;; (add-hook 'before-save-hook 'eglot-format-buffer nil t)  ; pyright has no formatting capability; apheleia handles formatting instead
   (add-hook 'before-save-hook 'delete-trailing-whitespace nil t)))
+
+;; ruff diagnostics via flymake-ruff.
+;; Attach to eglot-managed-mode-hook so flymake-ruff is added *after* eglot
+;; has set up its own flymake backend (otherwise eglot would clobber it).
+(require 'flymake-ruff)
+(add-hook 'eglot-managed-mode-hook
+          (lambda ()
+            (when (derived-mode-p 'python-mode)
+              (flymake-ruff-load))))
+
+;; ruff format on save via apheleia.
+;; The chain `(ruff-isort ruff)` first runs `ruff check --select I --fix -`
+;; (organize imports) and then `ruff format -` (the formatter proper). Both
+;; presets ship with apheleia out of the box — see `apheleia-formatters'.
+(require 'apheleia)
+(setf (alist-get 'python-mode apheleia-mode-alist) '(ruff-isort ruff))
+(add-hook 'python-mode-hook #'apheleia-mode)
 
 ;; ipython
 (when (executable-find "ipython")
