@@ -168,6 +168,8 @@
   (define-key tuareg-mode-map (kbd "C-c f") 'eglot-format-buffer)
   (add-hook 'before-save-hook 'eglot-format-buffer nil t)))
 
+(add-to-list 'load-path "~/.opam/default/share/emacs/site-lisp")
+(require 'ocp-indent)
 
 ;; TSX через web-mode
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
